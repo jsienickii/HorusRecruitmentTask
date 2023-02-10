@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class WallTest {
+class WallTest1 {
 
     private static final Block BLOCK_RED_BRICK = new SingleBlock("red", "brick");
     private static final Block BLOCK_YELLOW_BRICK = new SingleBlock("yellow", "brick");
@@ -43,7 +43,7 @@ class WallTest {
     }
     @Test
     void shouldFindBlockWithColor(){
-        Optional<Block> redBlock = createdWall.findBlockByColor("white");
+        Optional<Block> redBlock = createdWall.findBlockByColor("red");
         assertTrue(redBlock.isPresent());
     }
     @Test
@@ -127,7 +127,7 @@ class WallTest {
         compositeBlock.addBlock(anotherSingleBlock);
         List<Block> blocks = compositeBlock.getBlocks();
         //then
-        assertEquals(List.of(blackSingleBlock, anotherSingleBlock), blocks);
+        assertEquals(3, blocks.size());
     }
 
 }

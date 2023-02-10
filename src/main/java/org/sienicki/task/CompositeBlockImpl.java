@@ -1,12 +1,12 @@
 package org.sienicki.task;
 
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CompositeBlockImpl extends SingleBlock implements CompositeBlock{
-    private final List<Block> blockList = new LinkedList<>();
+public class CompositeBlockImpl extends SingleBlock implements CompositeBlock {
+    private final List<Block> blockList = new ArrayList<>();
 
     public CompositeBlockImpl(String color, String material) {
         super(color, material);
@@ -14,9 +14,8 @@ public class CompositeBlockImpl extends SingleBlock implements CompositeBlock{
 
     @Override
     public List<Block> getBlocks() {
-        return  Collections.unmodifiableList(blockList);
+        return toStream().collect(Collectors.toList());
     }
-
 
     @Override
     public Stream<Block> toStream() {
@@ -25,7 +24,8 @@ public class CompositeBlockImpl extends SingleBlock implements CompositeBlock{
                 blockList.stream().flatMap(Block::toStream)
         );
     }
-    public void addBlock(Block block){
+
+    public void addBlock(Block block) {
         blockList.add(block);
     }
 }
