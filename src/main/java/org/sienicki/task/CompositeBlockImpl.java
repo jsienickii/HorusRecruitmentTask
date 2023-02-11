@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 public class CompositeBlockImpl extends SingleBlock implements CompositeBlock {
     private final List<Block> blockList = new ArrayList<>();
 

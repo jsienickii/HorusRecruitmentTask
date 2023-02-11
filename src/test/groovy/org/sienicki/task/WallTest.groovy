@@ -4,60 +4,66 @@ import spock.lang.Shared
 import spock.lang.Specification
 
 class WallTest extends Specification {
+    //BLOCK FOR WALL_WITH_SIX_BLOCKS
+    @Shared
+    private final Block BLOCK_RED_BRICK = new SingleBlock("red", "brick")
+    @Shared
+    private final Block BLOCK_YELLOW_BRICK = new SingleBlock("yellow", "brick")
+    @Shared
+    private final CompositeBlockImpl COMPOSITE_BLOCK1 = new CompositeBlockImpl("black", "brick")
+    @Shared
+    private final CompositeBlockImpl COMPOSITE_BLOCK2 = new CompositeBlockImpl("white", "hollow")
+    @Shared
+    private final Block BLOCK_WHITE_STONE = new SingleBlock("white", "stone")
+    @Shared
+    private final Block STONE_BLOCK1 = new SingleBlock("dark ", "stone")
+
+    //BLOCKS FOR STONE_AND_HOLLOW_WALL_WITH_SEVEN_BLOCKS
+    @Shared
+    private final CompositeBlock STONE_COMPOSITE_BLOCK = new CompositeBlockImpl("yellow", "stone")
+    @Shared
+    private final Block STONE_BLOCK2 = new SingleBlock("dark ", "stone")
+    @Shared
+    private final Block HOLLOW_BLOCK1 = new SingleBlock("white", "hollow")
+    @Shared
+    private final Block HOLLOW_BLOCK2 = new SingleBlock("white", "hollow")
+    @Shared
+    private final Block HOLLOW_BLOCK3 = new SingleBlock("white", "hollow")
+    @Shared
+    private final Block HOLLOW_BLOCK4 = new SingleBlock("white", "hollow")
 
     @Shared
-    Block BLOCK_RED_BRICK = new SingleBlock("red", "brick")
+    private final Wall EMPTY_WALL = new Wall()
     @Shared
-    Block BLOCK_YELLOW_BRICK = new SingleBlock("yellow", "brick")
+    private final Wall WALL_WITH_SIX_BLOCKS = new Wall(BLOCK_YELLOW_BRICK, COMPOSITE_BLOCK1, BLOCK_RED_BRICK)
     @Shared
-    CompositeBlockImpl COMPOSITE_BLOCK1 = new CompositeBlockImpl("black", "brick")
-    @Shared
-    CompositeBlockImpl COMPOSITE_BLOCK2 = new CompositeBlockImpl("white", "hollow")
-    @Shared
-    Block BLOCK_WHITE_STONE = new SingleBlock("white", "stone")
-    @Shared
-    Wall wallDoesNotExist = new Wall()
-    @Shared
-    Wall wallWithSixBlocks = new Wall(BLOCK_YELLOW_BRICK, COMPOSITE_BLOCK1, BLOCK_RED_BRICK)
-    @Shared
-    Wall stoneAndHollowWall = new Wall()
-
+    private final Wall STONE_AND_HOLLOW_WALL_WITH_SEVEN_BLOCKS = new Wall(STONE_BLOCK1, STONE_COMPOSITE_BLOCK,
+                                                                STONE_BLOCK2, HOLLOW_BLOCK1, HOLLOW_BLOCK2, HOLLOW_BLOCK3,
+                                                                HOLLOW_BLOCK4)
 
     void setupSpec() {
         COMPOSITE_BLOCK1.addBlock(BLOCK_RED_BRICK)
         COMPOSITE_BLOCK2.addBlock(BLOCK_WHITE_STONE)
         COMPOSITE_BLOCK1.addBlock(COMPOSITE_BLOCK2)
-        Block firstStoneBlock = new SingleBlock("dark ", "stone");
-        CompositeBlock compositeBlock = new CompositeBlockImpl("yellow", "stone")
-        Block secondStoneBlock = new SingleBlock("dark ", "stone");
-        Block thirdStoneBlock = new SingleBlock("dark ", "stone");
-        Block firstHollowBlock = new SingleBlock("white", "hollow");
-        Block secondHollowBlock = new SingleBlock("white", "hollow");
-        Block thirdHollowBlock = new SingleBlock("white", "hollow");
-        compositeBlock.addBlock(thirdStoneBlock)
-        stoneAndHollowWall.addBlock(firstStoneBlock)
-        stoneAndHollowWall.addBlock(compositeBlock)
-        stoneAndHollowWall.addBlock(secondStoneBlock)
-        stoneAndHollowWall.addBlock(firstHollowBlock)
-        stoneAndHollowWall.addBlock(secondHollowBlock)
-        stoneAndHollowWall.addBlock(thirdHollowBlock)
     }
 
     def "should be able to instantiate class"() {
         expect:
-        assert wallDoesNotExist != null
+        EMPTY_WALL != null
     }
 
     def "should throw illegal argument exception when wall does not exist and color is null()"() {
         when:
-        wallDoesNotExist.findBlockByColor(null)
+        EMPTY_WALL.findBlockByColor(null)
+
         then:
         thrown(IllegalArgumentException)
     }
 
     def "should find block with color #color"() {
         expect:
-        wallWithSixBlocks.findBlockByColor(color) == Optional.of(expectedColor)
+        WALL_WITH_SIX_BLOCKS.findBlockByColor(color) == Optional.of(expectedColor)
+
         where:
         color    | expectedColor
         "yellow" | BLOCK_YELLOW_BRICK
@@ -67,34 +73,34 @@ class WallTest extends Specification {
 
     def "should not find block with color #color "() {
         expect:
-        Optional.empty() == wallWithSixBlocks.findBlockByColor(color)
+        Optional.empty() == WALL_WITH_SIX_BLOCKS.findBlockByColor(color)
+
         where:
         color << ["green", "pink", "orange"]
     }
 
     def "should throw illegal argument exception when wall does not exist and material is null"() {
         when:
-        wallDoesNotExist.findBlockByMaterial(null)
+        EMPTY_WALL.findBlockByMaterial(null)
+
         then:
         thrown(IllegalArgumentException)
     }
 
     def "should find list of block with material #material"() {
-        given:
-        Wall stoneAndHollowWall = new Wall()
-
         expect:
-        stoneAndHollowWall.findBlockByMaterial(material).size() == sizeOfList
+        STONE_AND_HOLLOW_WALL_WITH_SEVEN_BLOCKS.findBlockByMaterial(material).size() == sizeOfList
+
         where:
         material | sizeOfList
-        "stone"  | 4
-        "hollow" | 2
+        "stone"  | 3
+        "hollow" | 4
     }
 
     def "should not found wall with material #material"() {
-
         expect:
-        wallWithSixBlocks.findBlockByMaterial("material").size() == result
+        WALL_WITH_SIX_BLOCKS.findBlockByMaterial("material").size() == result
+
         where:
         material | result
         "wood"   | 0
@@ -103,7 +109,7 @@ class WallTest extends Specification {
 
     def "should return 0 when wall is empty "() {
         expect:
-        assert wallDoesNotExist.count() == 0
+        EMPTY_WALL.count() == 0
     }
 
     def "should count numbers of block in wall #anyWall"() {
@@ -111,46 +117,24 @@ class WallTest extends Specification {
         anyWall.count() == sizeOfWall
 
         where:
-        anyWall            | sizeOfWall
-        wallWithSixBlocks  | 6
-        stoneAndHollowWall | 7
+        anyWall                                 | sizeOfWall
+        WALL_WITH_SIX_BLOCKS                    | 6
+        STONE_AND_HOLLOW_WALL_WITH_SEVEN_BLOCKS | 7
     }
 
-    def "should add block to wall and count it"() {
-        expect:
-        Block exampleBlock1 = new SingleBlock("grey", "stone")
-        Block exampleBlock2 = new SingleBlock("white", "hollow")
-        wallWithSixBlocks.addBlock(exampleBlock1)
-        stoneAndHollowWall.addBlock(exampleBlock1)
-        stoneAndHollowWall.addBlock(exampleBlock2)
-
-        anyWall.count() == resultat
-
-        where:
-        anyWall            | resultat
-        wallWithSixBlocks  | 7
-        stoneAndHollowWall | 9
-    }
-
-    private Wall createWall(List<Block> blockList) {
-
-    }
-
-    def "should add block to wall and count it properly"() {
-
+    def "should add block to wall and count it "() {
         given:
         Wall newWall = new Wall()
-        Wall newWall1 = new Wall()
         Block exampleBlock1 = new SingleBlock("grey", "stone")
         Block exampleBlock2 = new SingleBlock("white", "hollow")
+
         when:
         newWall.addBlock(exampleBlock2)
         newWall.addBlock(exampleBlock1)
-        def numberOfBlocks = newWall.count()
-        def numbersOfEmptyWall = newWall1.count()
+        int numberOfBlocks = newWall.count()
+
         then:
-        assert numberOfBlocks == 2
-        assert numbersOfEmptyWall == 0
+        numberOfBlocks == 2
     }
 
 }

@@ -1,8 +1,12 @@
 package org.sienicki.task;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 import java.util.stream.Stream;
 
+@EqualsAndHashCode
+@ToString
 public class SingleBlock implements Block {
     private final String color;
     private final String material;
@@ -27,24 +31,5 @@ public class SingleBlock implements Block {
         return Stream.of(this);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SingleBlock that = (SingleBlock) o;
-        return Objects.equals(color, that.color) && Objects.equals(material, that.material);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(color, material);
-    }
-
-    @Override
-    public String toString() {
-        return "SingleBlock{" +
-                "color='" + color + '\'' +
-                ", material='" + material + '\'' +
-                '}';
-    }
 }
